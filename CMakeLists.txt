@@ -9,67 +9,50 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS
+# Укажите версию Python
+find_package(Python3 COMPONENTS Development REQUIRED)
+
+# Укажите путь к Boost.Python
+find_package(Boost REQUIRED COMPONENTS python311)
+
+# Убедитесь, что CMake находит заголовки для Python
+include_directories(${Python3_INCLUDE_DIRS})
+
+# Также можно добавить пути к заголовкам Boost (опционально, если они не найдены автоматически)
+include_directories(${Boost_INCLUDE_DIRS})
+
+find_package(Qt6 REQUIRED COMPONENTS
     3DCore
     3DRender
     3DInput
     3DLogic
     3DExtras
     3DAnimation
-    Widgets)
-
-set(PROJECT_SOURCES
-        main.cpp
-        mainwindow.cpp
-        mainwindow.h
-        mainwindow.ui
+    Widgets
 )
 
-if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(RobotApp
-        MANUAL_FINALIZATION
-        ${PROJECT_SOURCES}
-    )
-# Define target properties for Android with Qt 6 as:
-#    set_property(TARGET RobotApp APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
-#                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
-# For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
-else()
-    if(ANDROID)
-        add_library(RobotApp SHARED
-            ${PROJECT_SOURCES}
-        )
-# Define properties for Android with Qt 5 after find_package() calls as:
-#    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
-    else()
-        add_executable(RobotApp
-            ${PROJECT_SOURCES}
-        )
-    endif()
-endif()
+
+set(PROJECT_SOURCES
+        src/main.cpp
+        src/mainwindow.cpp
+        src/mainwindow.ui
+        include/mainwindow.h
+)
+include_directories(include)
+
+add_executable(RobotApp
+    ${PROJECT_SOURCES}
+)
 
 target_link_libraries(RobotApp PRIVATE
-    Qt${QT_VERSION_MAJOR}::Widgets
+    Qt6::Widgets
     Qt6::3DCore
     Qt6::3DRender
     Qt6::3DLogic
     Qt6::3DExtras
     Qt6::3DAnimation
+    ${Python3_LIBRARIES}  # Добавляем библиотеки Python
+    ${Boost_LIBRARIES}    # Добавляем библиотеки Boost.Python
 )
 
-set_target_properties(RobotApp PROPERTIES
-    MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
-    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
-    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
-    MACOSX_BUNDLE TRUE
-    WIN32_EXECUTABLE TRUE
-)
 
-install(TARGETS RobotApp
-    BUNDLE DESTINATION .
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
-
-if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(RobotApp)
-endif()
