@@ -31,14 +31,27 @@ find_package(Qt6 REQUIRED COMPONENTS
     Widgets
 )
 
-
 set(PROJECT_SOURCES
         src/main.cpp
         src/mainwindow.cpp
         src/mainwindow.ui
+        src/armmodel.cpp
+        src/armview.cpp
         include/mainwindow.h
+        include/armmodel.h
+        include/armview.h
+        computervision.qrc
 )
+
+
+
 include_directories(include)
+
+file(GLOB QT_RESOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} computervision.qrc)
+
+
+
+
 
 add_executable(RobotApp
     ${PROJECT_SOURCES}
