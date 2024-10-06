@@ -1,5 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>armdetector.py</file>
-    </qresource>
-</RCC>
