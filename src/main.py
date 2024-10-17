@@ -11,5 +11,6 @@ if __name__ == "__main__":
     w.show()
 
     # armdetector.detect_arm()
+    
     sys.exit(app.exec())
 
